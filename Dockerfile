@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     python3 \
     curl \
+    ca-certificates \
     ffmpeg \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
@@ -43,7 +44,7 @@ WORKDIR /app
 # Copy package files first for better caching
 COPY source/package*.json ./
 
-# Install dependencies
+# Install dependencies (--ignore-scripts to skip youtube-dl-exec preinstall)
 RUN npm install --ignore-scripts && npm rebuild
 
 # Copy the rest of the application
