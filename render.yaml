@@ -1,0 +1,28 @@
+# render.yaml - Configuration for Render.com deployment
+# Includes Puppeteer/Chrome buildpack for server-side image generation
+
+services:
+  - type: web
+    name: youtube-instagram-carousel
+    runtime: node
+    rootDir: source
+    buildCommand: |
+      # Install Chrome for Puppeteer
+      apt-get update && apt-get install -y \
+        chromium \
+        libnss3 \
+        libfreetype6 \
+        libfreetype6-dev \
+        libharfbuzz0b \
+        ca-certificates \
+        fonts-freefont-ttf \
+        libxss1 \
+        --no-install-recommends
+      npm install
+    startCommand: node server/index.js
+    envVars:
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /usr/bin/chromium
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: "true"
+    healthCheckPath: /api/health

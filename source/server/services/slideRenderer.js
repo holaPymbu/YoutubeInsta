@@ -328,10 +328,26 @@ async function renderSlidesToImages(concepts, videoId, videoTitle, onProgress) {
 
     try {
         console.log('🚀 Launching Puppeteer browser...');
-        browser = await puppeteer.launch({
+
+        // Use system Chrome if available (for Render deployment)
+        const launchOptions = {
             headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-        });
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--single-process'
+            ]
+        };
+
+        // Check for Chrome path from environment (Render deployment)
+        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+            launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+            console.log(`📍 Using Chrome at: ${launchOptions.executablePath}`);
+        }
+
+        browser = await puppeteer.launch(launchOptions);
 
         const page = await browser.newPage();
         await page.setViewport({ width: SLIDE_WIDTH, height: SLIDE_HEIGHT });
