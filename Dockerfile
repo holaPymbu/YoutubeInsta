@@ -1,11 +1,10 @@
 # Use Node with Chromium for Puppeteer
 FROM node:20-slim
 
-# Install Chrome dependencies
+# Install Chrome dependencies and Chromium
 RUN apt-get update && apt-get install -y \
     chromium \
     fonts-liberation \
-    libappindicator3-1 \
     libasound2 \
     libatk-bridge2.0-0 \
     libatk1.0-0 \
@@ -24,7 +23,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Puppeteer environment variables
+# Set Puppeteer to skip downloading Chromium (we use system Chromium)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
@@ -34,8 +33,8 @@ WORKDIR /app
 # Copy package files first for better caching
 COPY source/package*.json ./
 
-# Install dependencies
-RUN npm install --production
+# Install ALL dependencies (puppeteer needs this to work with system chromium)
+RUN npm install
 
 # Copy the rest of the application
 COPY source/ ./
