@@ -1,4 +1,5 @@
 const { Innertube } = require('youtubei.js');
+const { YoutubeTranscript } = require('youtube-transcript');
 
 let innertube = null;
 
@@ -14,6 +15,45 @@ async function getClient() {
         });
     }
     return innertube;
+}
+
+/**
+ * Get transcript using youtube-transcript package (works better on servers)
+ */
+async function getTranscriptAlternative(videoId) {
+    console.log(`🔄 Trying youtube-transcript package for video ${videoId}...`);
+
+    const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
+
+    if (!transcriptItems || transcriptItems.length === 0) {
+        throw new Error('No transcript found with alternative method');
+    }
+
+    const fullText = transcriptItems
+        .map(item => item.text)
+        .join(' ')
+        .replace(/\\n/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/\[.*?\]/g, '') // Remove [Music] etc
+        .trim();
+
+    if (fullText.length < 50) {
+        throw new Error('Transcript too short');
+    }
+
+    console.log(`✅ Alternative transcript retrieved (${fullText.length} chars)`);
+
+    return {
+        text: fullText,
+        segments: transcriptItems.map(item => ({
+            text: item.text,
+            offset: item.offset || 0,
+            duration: item.duration || 0
+        })),
+        videoTitle: 'YouTube Video',
+        duration: 0,
+        source: 'youtube-transcript'
+    };
 }
 
 /**
@@ -90,26 +130,33 @@ async function getTranscript(videoId) {
         };
 
     } catch (error) {
-        console.error(`❌ Failed to get transcript for ${videoId}:`, error.message);
+        console.error(`❌ InnerTube failed for ${videoId}:`, error.message);
 
-        // Try AssemblyAI fallback for transcription
-        const transcriptionService = require('./transcriptionService');
+        // Fallback 1: Try youtube-transcript package (works better on servers)
+        try {
+            console.log('⚠️ InnerTube failed, trying youtube-transcript package...');
+            return await getTranscriptAlternative(videoId);
+        } catch (altError) {
+            console.error('❌ youtube-transcript also failed:', altError.message);
 
-        if (transcriptionService.isAvailable()) {
-            try {
-                console.log('⚠️ YouTube transcript failed, using AssemblyAI fallback...');
-                return await transcriptionService.transcribeVideo(videoId);
-            } catch (fallbackError) {
-                console.error('❌ AssemblyAI fallback also failed:', fallbackError.message);
-                throw new Error(`Transcription failed. YouTube error: ${error.message}. AssemblyAI error: ${fallbackError.message}`);
+            // Fallback 2: Try AssemblyAI (download audio + transcribe)
+            const transcriptionService = require('./transcriptionService');
+
+            if (transcriptionService.isAvailable()) {
+                try {
+                    console.log('⚠️ All YouTube methods failed, using AssemblyAI fallback...');
+                    return await transcriptionService.transcribeVideo(videoId);
+                } catch (fallbackError) {
+                    console.error('❌ AssemblyAI fallback also failed:', fallbackError.message);
+                    throw new Error(`Transcription failed. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. AssemblyAI: ${fallbackError.message}`);
+                }
+            } else {
+                console.log('⚠️ AssemblyAI not configured (missing ASSEMBLYAI_API_KEY)');
+                throw new Error(
+                    `Failed to get transcript. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. ` +
+                    'AssemblyAI not configured. Add ASSEMBLYAI_API_KEY to your .env file for audio transcription fallback.'
+                );
             }
-        } else {
-            console.log('⚠️ AssemblyAI not configured (missing ASSEMBLYAI_API_KEY)');
-            // Provide clear message about how to fix this
-            throw new Error(
-                'This video does not have YouTube captions. To transcribe videos without captions, ' +
-                'add ASSEMBLYAI_API_KEY to your .env file. Get a free key at: https://www.assemblyai.com/dashboard/signup'
-            );
         }
     }
 }

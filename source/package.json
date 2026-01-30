@@ -18,6 +18,7 @@
     "puppeteer": "^24.36.1",
     "sharp": "^0.34.5",
     "youtube-dl-exec": "^3.0.30",
+    "youtube-transcript": "^1.2.1",
     "youtubei.js": "^12.2.0"
   },
   "keywords": [
