@@ -37,8 +37,7 @@ async function getTranscript(videoId) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                urls: [videoUrl],
-                maxRetries: 2
+                startUrls: [{ url: videoUrl }]
             })
         }
     );
