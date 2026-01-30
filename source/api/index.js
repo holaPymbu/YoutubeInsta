@@ -1,13 +1,15 @@
 // Vercel Serverless API Handler
 // This wraps the Express app for Vercel serverless functions
 
-// Load environment variables
-require('dotenv').config();
+// Load environment variables from root
+require('dotenv').config({ path: require('path').join(__dirname, '../../.env') });
 
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const apiRoutes = require('./routes/api');
+
+// Import routes from server directory
+const apiRoutes = require('../server/routes/api');
 
 const app = express();
 
@@ -18,12 +20,13 @@ app.use(express.json());
 // API Routes
 app.use('/api', apiRoutes);
 
-// Health check at root for Vercel
+// Health check at root API
 app.get('/api', (req, res) => {
     res.json({
         status: 'ok',
         message: 'YoutubeInsta API is running on Vercel',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        environment: process.env.VERCEL ? 'vercel' : 'local'
     });
 });
 
