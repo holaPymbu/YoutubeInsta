@@ -5,7 +5,7 @@
  */
 
 const APIFY_API_KEY = process.env.APIFY_API_KEY;
-const APIFY_ACTOR_ID = 'bernardo/youtube-transcript-scraper';
+const APIFY_ACTOR_ID = 'im_broke~youtube-transcript-scraper';
 
 /**
  * Check if Apify is configured
