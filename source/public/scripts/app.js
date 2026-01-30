@@ -88,7 +88,7 @@ function validateYouTubeUrl(url) {
     return patterns.some(pattern => pattern.test(url));
 }
 
-function setLoading(loading, text = 'Processing...') {
+function setLoading(loading, text = 'Procesando...') {
     state.isProcessing = loading;
     elements.generateBtn.disabled = loading;
     elements.processTextBtn.disabled = loading;
@@ -121,9 +121,9 @@ function renderSlidePreview(concept, index, total, videoTitle) {
         <div class="slide__decoration slide__decoration--bottom"></div>
         
         <div class="slide__content">
-          <h2 class="slide__main-title">${videoTitle || 'Key Insights'}</h2>
+          <h2 class="slide__main-title">${videoTitle || 'Ideas Clave'}</h2>
           <div class="slide__divider"></div>
-          <p class="slide__subtitle">Swipe to explore →</p>
+          <p class="slide__subtitle">Desliza para explorar →</p>
         </div>
         
         <div class="slide__footer">
@@ -166,7 +166,7 @@ function renderSlidePreview(concept, index, total, videoTitle) {
 function renderSlideImage(imageSrc, index) {
     return `
     <div class="slide slide--image" data-index="${index}">
-      <img src="${imageSrc}" alt="Slide ${index + 1}" class="slide__image" loading="lazy" />
+      <img src="${imageSrc}" alt="Diapositiva ${index + 1}" class="slide__image" loading="lazy" />
     </div>
   `;
 }
@@ -176,7 +176,7 @@ function renderSlideImage(imageSrc, index) {
 // ─────────────────────────────────────────────────────────────────────────────
 function renderCarousel() {
     const total = state.concepts.length;
-    const videoTitle = state.videoTitle || 'Key Insights';
+    const videoTitle = state.videoTitle || 'Ideas Clave';
 
     if (state.showImages && state.generatedImages.length > 0) {
         // Render generated images
@@ -272,7 +272,7 @@ function displayResults(result) {
     elements.resultsSection.scrollIntoView({ behavior: 'smooth' });
 
     const demoText = result.isDemo ? ' (Demo)' : '';
-    showToast(`Generated ${result.concepts.length} professional slides!${demoText}`, 'success');
+    showToast(`¡${result.concepts.length} diapositivas profesionales generadas!${demoText}`, 'success');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -375,8 +375,8 @@ function updateTranscriptStats() {
     const charCount = text.length;
     const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
 
-    elements.charCount.textContent = `${charCount.toLocaleString()} characters`;
-    elements.wordCount.textContent = `${wordCount.toLocaleString()} words`;
+    elements.charCount.textContent = `${charCount.toLocaleString()} caracteres`;
+    elements.wordCount.textContent = `${wordCount.toLocaleString()} palabras`;
 }
 
 // Handle confirm transcript (Step 2 - process with edited text)
@@ -385,13 +385,13 @@ async function handleConfirmTranscript() {
     const slideCount = parseInt(elements.slideCountSelect.value);
 
     if (editedText.length < 50) {
-        showToast('Transcript must have at least 50 characters', 'error');
+        showToast('La transcripción debe tener al menos 50 caracteres', 'error');
         return;
     }
 
     try {
         elements.transcriptSection.classList.add('hidden');
-        setLoading(true, 'Processing transcript with AI...');
+        setLoading(true, 'Procesando transcripción con IA...');
         updateProgress(30);
 
         // Process with the edited transcript
@@ -404,7 +404,7 @@ async function handleConfirmTranscript() {
         updateProgress(100);
         await new Promise(resolve => setTimeout(resolve, 300));
         displayResults(result);
-        showToast('Carousel generated successfully!', 'success');
+        showToast('¡Carrusel generado exitosamente!', 'success');
     } catch (error) {
         setLoading(false);
         elements.transcriptSection.classList.remove('hidden');
@@ -425,12 +425,12 @@ async function handleGenerate() {
     const url = elements.urlInput.value.trim();
 
     if (!url) {
-        elements.urlError.textContent = 'Please enter a YouTube URL';
+        elements.urlError.textContent = 'Por favor ingresa una URL de YouTube';
         return;
     }
 
     if (!validateYouTubeUrl(url)) {
-        elements.urlError.textContent = 'Please enter a valid YouTube URL';
+        elements.urlError.textContent = 'Por favor ingresa una URL de YouTube válida';
         return;
     }
 
@@ -440,7 +440,7 @@ async function handleGenerate() {
     state.pendingUrl = url;
 
     try {
-        setLoading(true, 'Extracting transcript...');
+        setLoading(true, 'Extrayendo transcripción...');
         updateProgress(20);
         setTimeout(() => updateProgress(50), 500);
 
@@ -450,8 +450,8 @@ async function handleGenerate() {
         await new Promise(resolve => setTimeout(resolve, 300));
 
         // Show transcript editor instead of directly processing
-        showTranscriptEditor(result.transcript, result.transcript.videoTitle || 'YouTube Video', result.videoId);
-        showToast('Transcript extracted! Review and confirm.', 'success');
+        showTranscriptEditor(result.transcript, result.transcript.videoTitle || 'Video de YouTube', result.videoId);
+        showToast('¡Transcripción extraída! Revisa y confirma.', 'success');
     } catch (error) {
         setLoading(false);
         elements.urlError.textContent = error.message;
@@ -467,7 +467,7 @@ async function handleProcessText() {
     const slideCount = parseInt(elements.slideCountSelect.value);
 
     if (text.length < 50) {
-        showToast('Please enter at least 50 characters', 'error');
+        showToast('Por favor ingresa al menos 50 caracteres', 'error');
         return;
     }
 
@@ -475,7 +475,7 @@ async function handleProcessText() {
     elements.resultsSection.classList.add('hidden');
 
     try {
-        setLoading(true, 'Processing transcript...');
+        setLoading(true, 'Procesando transcripción...');
         updateProgress(30);
         setTimeout(() => updateProgress(70), 300);
 
@@ -494,7 +494,7 @@ async function handleDemo() {
     elements.resultsSection.classList.add('hidden');
 
     try {
-        setLoading(true, 'Loading demo...');
+        setLoading(true, 'Cargando demo...');
         updateProgress(50);
 
         const result = await loadDemo();
@@ -521,8 +521,8 @@ function handleToggleManual() {
     elements.manualInputSection.classList.toggle('hidden');
     const isVisible = !elements.manualInputSection.classList.contains('hidden');
     elements.toggleManualBtn.innerHTML = isVisible
-        ? '<span>✖️</span> Hide transcript input'
-        : '<span>📝</span> Or paste transcript manually';
+        ? '<span>✖️</span> Ocultar entrada de transcripción'
+        : '<span>📝</span> O pega la transcripción manualmente';
 }
 
 function handlePrevSlide() {
@@ -540,9 +540,9 @@ async function handleCopyCaption() {
     if (state.copy) {
         try {
             await navigator.clipboard.writeText(state.copy.fullPost);
-            showToast('Caption copied to clipboard!', 'success');
+            showToast('¡Descripción copiada al portapapeles!', 'success');
         } catch (error) {
-            showToast('Failed to copy caption', 'error');
+            showToast('Error al copiar descripción', 'error');
         }
     }
 }
@@ -552,7 +552,7 @@ async function handleGenerateImages() {
     if (state.generatedImages.length > 0) {
         state.showImages = !state.showImages;
         renderCarousel();
-        showToast(state.showImages ? 'Showing generated images' : 'Showing preview', 'success');
+        showToast(state.showImages ? 'Mostrando imágenes generadas' : 'Mostrando vista previa', 'success');
         return;
     }
 
@@ -561,7 +561,7 @@ async function handleGenerateImages() {
         state.generatedImages = DEMO_IMAGES.slice(0, Math.min(4, state.concepts.length));
         state.showImages = true;
         renderCarousel();
-        showToast('Displaying pre-generated slides!', 'success');
+        showToast('¡Mostrando diapositivas pre-generadas!', 'success');
         return;
     }
 
@@ -574,7 +574,7 @@ async function handleGenerateImages() {
     const showLoadingOverlay = () => {
         loadingOverlay.classList.add('active');
         progressFill.style.width = '0%';
-        loadingStatus.textContent = 'Preparing slides...';
+        loadingStatus.textContent = 'Preparando diapositivas...';
     };
 
     // Hide loading overlay
@@ -586,13 +586,13 @@ async function handleGenerateImages() {
     const updateProgress = (current, total) => {
         const percent = Math.round((current / total) * 100);
         progressFill.style.width = `${percent}%`;
-        loadingStatus.textContent = `Generating slide ${current} of ${total}...`;
+        loadingStatus.textContent = `Generando diapositiva ${current} de ${total}...`;
     };
 
     // Generate images using Imagen 4 API via backend
     try {
         elements.generateImagesBtn.disabled = true;
-        elements.generateImagesBtn.innerHTML = '<span class="btn-icon">⏳</span><span>Generating with AI...</span>';
+        elements.generateImagesBtn.innerHTML = '<span class="btn-icon">⏳</span><span>Generando con IA...</span>';
 
         // Show the premium loading overlay
         showLoadingOverlay();
@@ -620,7 +620,7 @@ async function handleGenerateImages() {
 
         clearInterval(progressInterval);
         progressFill.style.width = '100%';
-        loadingStatus.textContent = 'Finishing up...';
+        loadingStatus.textContent = 'Finalizando...';
 
         const data = await response.json();
 
@@ -633,9 +633,9 @@ async function handleGenerateImages() {
 
         if (data.promptsOnly) {
             // API key not configured, show message
-            showToast('⚠️ Image generation not configured. Using preview mode.', 'error');
+            showToast('⚠️ Generación de imágenes no configurada. Usando modo vista previa.', 'error');
             elements.generateImagesBtn.disabled = false;
-            elements.generateImagesBtn.innerHTML = '<span class="btn-icon">🖼️</span><span>Generate Slide Images</span>';
+            elements.generateImagesBtn.innerHTML = '<span class="btn-icon">🖼️</span><span>Generar Imágenes de Diapositivas</span>';
             return;
         }
 
@@ -648,26 +648,26 @@ async function handleGenerateImages() {
             renderCarousel();
 
             const stats = data.stats || { success: state.generatedImages.length, total: state.concepts.length };
-            showToast(`✨ Generated ${stats.success}/${stats.total} professional images!`, 'success');
+            showToast(`✨ ¡${stats.success}/${stats.total} imágenes profesionales generadas!`, 'success');
         } else {
-            showToast('❌ Failed to generate images. Please try again.', 'error');
+            showToast('❌ Error al generar imágenes. Por favor intenta de nuevo.', 'error');
         }
 
         elements.generateImagesBtn.disabled = false;
-        elements.generateImagesBtn.innerHTML = '<span class="btn-icon">🖼️</span><span>Toggle Preview/Images</span>';
+        elements.generateImagesBtn.innerHTML = '<span class="btn-icon">🖼️</span><span>Alternar Vista Previa/Imágenes</span>';
 
     } catch (error) {
         console.error('Error generating images:', error);
         hideLoadingOverlay();
         showToast('❌ Error: ' + error.message, 'error');
         elements.generateImagesBtn.disabled = false;
-        elements.generateImagesBtn.innerHTML = '<span class="btn-icon">🖼️</span><span>Generate Slide Images</span>';
+        elements.generateImagesBtn.innerHTML = '<span class="btn-icon">🖼️</span><span>Generar Imágenes de Diapositivas</span>';
     }
 }
 
 async function handleDownloadAll() {
     if (state.generatedImages.length === 0) {
-        showToast('Generate images first', 'error');
+        showToast('Genera las imágenes primero', 'error');
         return;
     }
 
@@ -682,13 +682,13 @@ async function handleDownloadAll() {
         await new Promise(r => setTimeout(r, 300)); // Small delay between downloads
     }
 
-    showToast(`Downloaded ${state.generatedImages.length} images!`, 'success');
+    showToast(`¡${state.generatedImages.length} imágenes descargadas!`, 'success');
 }
 
 function handleInputChange() {
     const url = elements.urlInput.value.trim();
     elements.urlError.textContent = url && !validateYouTubeUrl(url)
-        ? 'Please enter a valid YouTube URL'
+        ? 'Por favor ingresa una URL de YouTube válida'
         : '';
 }
 
@@ -726,7 +726,7 @@ function init() {
 
     elements.urlInput.focus();
 
-    console.log('🎬 YouTube to Instagram Carousel Generator - Nano Banana Edition');
+    console.log('🎬 Generador de Carruseles de YouTube a Instagram - Edición Nano Banana');
 }
 
 document.addEventListener('DOMContentLoaded', init);
