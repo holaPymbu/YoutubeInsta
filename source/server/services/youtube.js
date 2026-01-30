@@ -139,23 +139,49 @@ async function getTranscript(videoId) {
         } catch (altError) {
             console.error('❌ youtube-transcript also failed:', altError.message);
 
-            // Fallback 2: Try AssemblyAI (download audio + transcribe)
-            const transcriptionService = require('./transcriptionService');
+            // Fallback 2: Try Apify (works from any server, handles anti-bot)
+            const apifyService = require('./apifyTranscriptionService');
 
-            if (transcriptionService.isAvailable()) {
+            if (apifyService.isAvailable()) {
                 try {
-                    console.log('⚠️ All YouTube methods failed, using AssemblyAI fallback...');
-                    return await transcriptionService.transcribeVideo(videoId);
-                } catch (fallbackError) {
-                    console.error('❌ AssemblyAI fallback also failed:', fallbackError.message);
-                    throw new Error(`Transcription failed. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. AssemblyAI: ${fallbackError.message}`);
+                    console.log('⚠️ YouTube methods failed, trying Apify...');
+                    return await apifyService.getTranscript(videoId);
+                } catch (apifyError) {
+                    console.error('❌ Apify also failed:', apifyError.message);
+
+                    // Fallback 3: Try AssemblyAI (download audio + transcribe)
+                    const transcriptionService = require('./transcriptionService');
+
+                    if (transcriptionService.isAvailable()) {
+                        try {
+                            console.log('⚠️ All other methods failed, using AssemblyAI fallback...');
+                            return await transcriptionService.transcribeVideo(videoId);
+                        } catch (fallbackError) {
+                            console.error('❌ AssemblyAI fallback also failed:', fallbackError.message);
+                            throw new Error(`Transcription failed. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. Apify: ${apifyError.message}. AssemblyAI: ${fallbackError.message}`);
+                        }
+                    } else {
+                        throw new Error(`Transcription failed. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. Apify: ${apifyError.message}. AssemblyAI not configured.`);
+                    }
                 }
             } else {
-                console.log('⚠️ AssemblyAI not configured (missing ASSEMBLYAI_API_KEY)');
-                throw new Error(
-                    `Failed to get transcript. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. ` +
-                    'AssemblyAI not configured. Add ASSEMBLYAI_API_KEY to your .env file for audio transcription fallback.'
-                );
+                // No Apify, try AssemblyAI directly
+                const transcriptionService = require('./transcriptionService');
+
+                if (transcriptionService.isAvailable()) {
+                    try {
+                        console.log('⚠️ YouTube methods failed, using AssemblyAI fallback...');
+                        return await transcriptionService.transcribeVideo(videoId);
+                    } catch (fallbackError) {
+                        console.error('❌ AssemblyAI fallback also failed:', fallbackError.message);
+                        throw new Error(`Transcription failed. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. AssemblyAI: ${fallbackError.message}`);
+                    }
+                } else {
+                    throw new Error(
+                        `Failed to get transcript. InnerTube: ${error.message}. youtube-transcript: ${altError.message}. ` +
+                        'Configure APIFY_API_KEY or ASSEMBLYAI_API_KEY for additional fallback options.'
+                    );
+                }
             }
         }
     }
