@@ -1,0 +1,24 @@
+# Variables de entorno (secretos)
+.env
+.env.local
+.env.*.local
+
+# Directorio temporal
+.tmp/
+
+# Skills (se clona desde repo externo)
+.agent/skills/
+
+# Dependencias
+node_modules/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

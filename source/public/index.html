@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube to Instagram Carousel Generator</title>
+  <meta name="description" content="Transform YouTube videos into stunning Instagram carousels automatically">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/slides.css">
+</head>
+
+<body>
+  <div class="app">
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-blur"></div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">🎬</span>
+        <span class="logo-text">YT<span class="highlight">→</span>Carousel</span>
+      </div>
+      <p class="tagline">Transform YouTube videos into Instagram carousels</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Input Section -->
+      <section class="input-section">
+        <div class="input-card glass">
+          <h2 class="section-title">Paste your YouTube URL</h2>
+          <div class="input-wrapper">
+            <div class="input-container">
+              <span class="input-icon">🔗</span>
+              <input type="text" id="youtubeUrl" class="url-input" placeholder="https://www.youtube.com/watch?v=..."
+                autocomplete="off">
+              <button id="clearBtn" class="clear-btn" title="Clear">×</button>
+            </div>
+            <button id="generateBtn" class="generate-btn">
+              <span class="btn-text">Generate Carousel</span>
+              <span class="btn-icon">✨</span>
+            </button>
+          </div>
+          <div id="urlError" class="error-message"></div>
+
+          <!-- Manual Transcript Option -->
+          <div class="manual-section">
+            <button id="toggleManualBtn" class="toggle-manual-btn">
+              <span>📝</span> Or paste transcript manually
+            </button>
+            <div id="manualInputSection" class="manual-input-section hidden">
+              <textarea id="manualTranscript" class="manual-textarea"
+                placeholder="Paste your video transcript here... (minimum 50 characters)" rows="6"></textarea>
+              <button id="processTextBtn" class="generate-btn secondary-btn">
+                <span class="btn-text">Process Transcript</span>
+                <span class="btn-icon">📄</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="options-row">
+            <label class="option">
+              <span class="option-label">Slides:</span>
+              <select id="slideCount" class="option-select">
+                <option value="5">5 slides</option>
+                <option value="7" selected>7 slides</option>
+                <option value="10">10 slides</option>
+              </select>
+            </label>
+            <button id="demoBtn" class="demo-btn">
+              <span>🎯</span> Try Demo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Loading State -->
+      <section id="loadingSection" class="loading-section hidden">
+        <div class="loader-container glass">
+          <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+          </div>
+          <p class="loader-text" id="loaderText">Extracting transcript...</p>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transcript Editor Section (NEW) -->
+      <section id="transcriptSection" class="transcript-section hidden">
+        <div class="transcript-card glass">
+          <div class="transcript-header">
+            <div class="transcript-title-row">
+              <h2 class="section-title">📝 Review Transcript</h2>
+              <span id="videoTitlePreview" class="video-title-preview"></span>
+            </div>
+            <p class="transcript-info">Review and edit the transcript if needed before generating the carousel</p>
+          </div>
+          <textarea id="transcriptEditor" class="transcript-editor" rows="12"
+            placeholder="Transcript will appear here..."></textarea>
+          <div class="transcript-stats">
+            <span id="charCount">0 characters</span>
+            <span id="wordCount">0 words</span>
+          </div>
+          <div class="transcript-actions">
+            <button id="cancelTranscriptBtn" class="action-btn secondary">
+              <span>← Cancel</span>
+            </button>
+            <button id="confirmTranscriptBtn" class="generate-btn">
+              <span class="btn-text">Confirm & Generate Carousel</span>
+              <span class="btn-icon">✨</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section id="resultsSection" class="results-section hidden">
+        <!-- Video Title -->
+        <div id="videoTitleSection" class="video-title-section glass hidden">
+          <h3 id="videoTitle" class="video-title"></h3>
+        </div>
+
+        <!-- Concepts Preview -->
+        <div class="results-card glass">
+          <div class="results-header">
+            <h2 class="section-title">🎨 Your Carousel</h2>
+            <div class="results-actions">
+              <button id="downloadAllBtn" class="action-btn primary">
+                <span>Download All</span>
+                <span class="btn-icon">📥</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Carousel Preview -->
+          <div class="carousel-container">
+            <div class="carousel" id="carouselPreview">
+              <!-- Slides will be injected here -->
+            </div>
+            <div class="carousel-controls">
+              <button id="prevSlide" class="carousel-btn">‹</button>
+              <div class="carousel-dots" id="carouselDots"></div>
+              <button id="nextSlide" class="carousel-btn">›</button>
+            </div>
+          </div>
+
+          <!-- Generate Images Button -->
+          <div class="generate-images-section">
+            <button id="generateImagesBtn" class="generate-images-btn">
+              <span class="btn-icon">🖼️</span>
+              <span>Generate Slide Images</span>
+            </button>
+            <p class="generate-hint">Click to create professional slide images</p>
+          </div>
+        </div>
+
+        <!-- Instagram Copy -->
+        <div class="copy-card glass">
+          <div class="copy-header">
+            <h2 class="section-title">📝 Instagram Copy</h2>
+            <button id="copyCaptionBtn" class="action-btn secondary">
+              <span>Copy</span>
+              <span class="btn-icon">📋</span>
+            </button>
+          </div>
+          <div class="copy-content">
+            <div class="caption-box">
+              <h3 class="caption-label">Caption</h3>
+              <pre id="captionText" class="caption-text"></pre>
+            </div>
+            <div class="hashtags-box">
+              <h3 class="caption-label">Hashtags</h3>
+              <p id="hashtagsText" class="hashtags-text"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Made with ✨ for content creators</p>
+    </footer>
+  </div>
+
+  <!-- AI Image Generation Loading Overlay -->
+  <div id="aiLoadingOverlay" class="ai-loading-overlay">
+    <div class="ai-loading-content">
+      <div class="ai-loading-icon">
+        <div class="ai-loading-rings"></div>
+      </div>
+      <h2 class="ai-loading-title">Generating with AI</h2>
+      <p class="ai-loading-subtitle">Creating professional slide images...</p>
+      <div class="ai-loading-progress">
+        <div class="ai-loading-bar">
+          <div class="ai-loading-bar-fill" id="aiProgressFill" style="width: 0%"></div>
+        </div>
+      </div>
+      <p class="ai-loading-status" id="aiLoadingStatus">Preparing slides...</p>
+      <div class="ai-loading-tip">
+        <strong>💡 Tip:</strong> Each image takes ~5-10 seconds to generate with AI
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+
+</html>
