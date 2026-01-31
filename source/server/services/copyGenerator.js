@@ -1,9 +1,9 @@
 /**
- * Generate Instagram copy (caption and hashtags) from concepts
+ * Genera copy para Instagram (descripción y hashtags) desde los conceptos
  */
 
 /**
- * Generate engaging Instagram caption
+ * Generar descripción atractiva para Instagram
  */
 function generateCaption(concepts, transcript) {
     const mainPoints = concepts
@@ -11,51 +11,57 @@ function generateCaption(concepts, transcript) {
         .map((c, i) => `${i + 1}. ${c.content}`)
         .join('\n\n');
 
-    const caption = `✨ Swipe through for key insights! ✨
+    const caption = `✨ ¡Desliza para ver las ideas clave! ✨
 
 ${mainPoints}
 
-💡 Save this post for later!
-👉 Share with someone who needs to see this
+💡 ¡Guarda esta publicación para después!
+👉 Comparte con alguien que necesite ver esto
 
-Which point resonated with you the most? Drop a comment below! 👇
+¿Qué punto te resonó más? ¡Déjalo en los comentarios! 👇
 
 ---
-📌 Follow for more valuable content
-🔄 Share to help others learn`;
+📌 Síguenos para más contenido valioso
+🔄 Comparte para ayudar a otros a aprender`;
 
     return caption;
 }
 
 /**
- * Generate relevant hashtags based on content
+ * Generar hashtags relevantes basados en el contenido
  */
 function generateHashtags(concepts, transcript) {
     const baseHashtags = [
-        '#knowledge',
-        '#learning',
-        '#education',
-        '#tips',
+        '#conocimiento',
+        '#aprendizaje',
+        '#educacion',
+        '#consejos',
         '#insights',
-        '#motivation',
-        '#growthmindset',
-        '#selfimprovement',
-        '#carousel',
-        '#infographic'
+        '#motivacion',
+        '#crecimientopersonal',
+        '#desarrollopersonal',
+        '#carrusel',
+        '#infografia'
     ];
 
     const contentHashtags = [];
     const text = transcript.text.toLowerCase();
 
-    // Detect topic-specific hashtags
+    // Detectar hashtags específicos por tema
     const topicMap = {
-        business: ['#business', '#entrepreneur', '#success', '#startup'],
-        tech: ['#technology', '#tech', '#innovation', '#digital'],
-        marketing: ['#marketing', '#digitalmarketing', '#socialmedia', '#branding'],
-        finance: ['#finance', '#investing', '#money', '#wealth'],
-        health: ['#health', '#wellness', '#fitness', '#mindfulness'],
-        productivity: ['#productivity', '#timemanagement', '#efficiency', '#habits'],
-        leadership: ['#leadership', '#management', '#teamwork', '#leader']
+        negocio: ['#negocios', '#emprendedor', '#exito', '#startup'],
+        business: ['#negocios', '#emprendedor', '#exito', '#startup'],
+        tecnología: ['#tecnologia', '#tech', '#innovacion', '#digital'],
+        tech: ['#tecnologia', '#tech', '#innovacion', '#digital'],
+        marketing: ['#marketing', '#marketingdigital', '#redessociales', '#marca'],
+        finanzas: ['#finanzas', '#inversiones', '#dinero', '#finanzaspersonales'],
+        finance: ['#finanzas', '#inversiones', '#dinero', '#finanzaspersonales'],
+        salud: ['#salud', '#bienestar', '#fitness', '#vidasaludable'],
+        health: ['#salud', '#bienestar', '#fitness', '#vidasaludable'],
+        productividad: ['#productividad', '#gestiondeltiempo', '#eficiencia', '#habitos'],
+        productivity: ['#productividad', '#gestiondeltiempo', '#eficiencia', '#habitos'],
+        liderazgo: ['#liderazgo', '#gestion', '#trabajoenequipo', '#lider'],
+        leadership: ['#liderazgo', '#gestion', '#trabajoenequipo', '#lider']
     };
 
     for (const [topic, hashtags] of Object.entries(topicMap)) {
@@ -64,28 +70,28 @@ function generateHashtags(concepts, transcript) {
         }
     }
 
-    // Combine and limit hashtags
+    // Combinar y limitar hashtags
     const allHashtags = [...new Set([...contentHashtags, ...baseHashtags])];
     return allHashtags.slice(0, 15);
 }
 
 /**
- * Generate call to action text
+ * Generar texto de llamada a la acción
  */
 function generateCTA() {
     const ctas = [
-        '💾 Save this post for reference!',
-        '📲 Share with your network!',
-        '💬 Comment your thoughts below!',
-        '👆 Double tap if you agree!',
-        '🔔 Turn on notifications for more!'
+        '💾 ¡Guarda esta publicación como referencia!',
+        '📲 ¡Comparte con tu red!',
+        '💬 ¡Comenta tus pensamientos abajo!',
+        '👆 ¡Doble toque si estás de acuerdo!',
+        '🔔 ¡Activa las notificaciones para más!'
     ];
 
     return ctas[Math.floor(Math.random() * ctas.length)];
 }
 
 /**
- * Generate complete Instagram copy
+ * Generar copy completo para Instagram
  */
 function generateCopy(concepts, transcript) {
     const caption = generateCaption(concepts, transcript);

@@ -139,7 +139,7 @@ function extractConceptsHeuristic(transcript, slideCount = 7) {
     // Enhance first and last slides
     if (concepts.length > 0) {
         concepts[0].title = '🎬 ' + concepts[0].title.replace(/^[^\s]+\s/, '');
-        concepts[concepts.length - 1].title = '🎯 Key Takeaway';
+        concepts[concepts.length - 1].title = '🎯 Conclusión Clave';
     }
 
     return concepts;
