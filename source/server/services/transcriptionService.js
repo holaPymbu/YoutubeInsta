@@ -4,10 +4,13 @@
  */
 
 const { AssemblyAI } = require('assemblyai');
-const youtubedl = require('youtube-dl-exec');
+const { create: createYoutubeDl } = require('youtube-dl-exec');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+
+// Create youtube-dl instance using system yt-dlp binary (installed in Dockerfile)
+const youtubedl = createYoutubeDl('/usr/local/bin/yt-dlp');
 
 // Get AssemblyAI client
 function getAssemblyAIClient() {
@@ -30,7 +33,7 @@ async function downloadAudio(videoId) {
     const outputTemplate = path.join(tempDir, `youtube_audio_${videoId}`);
 
     try {
-        // Download audio using yt-dlp with explicit binary path
+        // Download audio using yt-dlp (binary configured via create())
         const result = await youtubedl(videoUrl, {
             output: `${outputTemplate}.%(ext)s`,
             extractAudio: true,
@@ -40,9 +43,6 @@ async function downloadAudio(videoId) {
             noCheckCertificates: true,
             quiet: false, // Enable output to see errors
             printJson: true
-        }, {
-            // Use system yt-dlp binary (installed in Dockerfile)
-            executablePath: '/usr/local/bin/yt-dlp'
         });
 
         const videoTitle = result.title || 'Unknown';
