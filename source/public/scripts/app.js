@@ -671,18 +671,45 @@ async function handleDownloadAll() {
         return;
     }
 
-    // Download each image
-    for (let i = 0; i < state.generatedImages.length; i++) {
+    try {
+        elements.downloadAllBtn.disabled = true;
+        elements.downloadAllBtn.innerHTML = '<span>Preparando ZIP...</span><span class="btn-icon">⏳</span>';
+
+        const zip = new JSZip();
+        const folder = zip.folder('carrusel_instagram');
+
+        // Fetch each image and add to ZIP
+        for (let i = 0; i < state.generatedImages.length; i++) {
+            showToast(`Procesando imagen ${i + 1} de ${state.generatedImages.length}...`, 'success');
+
+            const response = await fetch(state.generatedImages[i]);
+            const blob = await response.blob();
+            const filename = `slide_${String(i + 1).padStart(2, '0')}.png`;
+            folder.file(filename, blob);
+        }
+
+        // Generate ZIP file
+        showToast('Generando archivo ZIP...', 'success');
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+        // Download ZIP
         const link = document.createElement('a');
-        link.href = state.generatedImages[i];
-        link.download = `carousel_slide_${String(i + 1).padStart(2, '0')}.png`;
+        link.href = URL.createObjectURL(zipBlob);
+        link.download = 'carrusel_instagram.zip';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        await new Promise(r => setTimeout(r, 300)); // Small delay between downloads
-    }
+        URL.revokeObjectURL(link.href);
 
-    showToast(`¡${state.generatedImages.length} imágenes descargadas!`, 'success');
+        showToast(`¡${state.generatedImages.length} imágenes descargadas en ZIP!`, 'success');
+
+    } catch (error) {
+        console.error('Error creating ZIP:', error);
+        showToast('Error al crear el ZIP: ' + error.message, 'error');
+    } finally {
+        elements.downloadAllBtn.disabled = false;
+        elements.downloadAllBtn.innerHTML = '<span>Descargar Todo</span><span class="btn-icon">📥</span>';
+    }
 }
 
 function handleInputChange() {
