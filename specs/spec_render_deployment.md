@@ -25,19 +25,22 @@
 
 ## 4) Salidas esperadas
 - URL de producción: https://youtube-instagram-carousel.onrender.com
-- Dashboard: https://dashboard.render.com/web/srv-d5ugupvgi27c7397cr1g
-- Service ID: srv-d5ugupvgi27c7397cr1g
+- Dashboard: https://dashboard.render.com/web/srv-d60f8dogjchc73eg9lg0
+- Service ID: srv-d60f8dogjchc73eg9lg0
 
 ## 5) Herramientas / Skills
 - MCP: `render` (list_services, get_deploys, create_service)
+- MCP: `github` (create_repository, push_files)
 - API REST de Render (fallback)
 
 ## 6) Pasos
 1. Configurar MCP de Render con API key
 2. Obtener owner ID de Render
-3. Crear servicio web con configuración Node.js
-4. Configurar variables de entorno
-5. Verificar estado del deploy
+3. Crear repositorio en GitHub (si no existe)
+4. Push del código al repositorio
+5. Crear servicio web Docker conectado a GitHub
+6. Configurar variables de entorno
+7. Verificar estado del deploy
 
 ## 7) Validaciones / Criterios de éxito
 - Deployment exitoso sin errores
@@ -58,3 +61,5 @@
 - 2026-01-30: Railway trial expirado, migrado a Render
 - 2026-01-30: MCP de Render requiere `start` como subcomando
 - 2026-01-30: API REST de Render es más confiable que MCP para crear servicios
+- 2026-02-02: MCP de Render funciona correctamente para create_web_service con Docker
+- 2026-02-02: Para deploys Docker, el build toma ~3 minutos debido a Chromium/ffmpeg
