@@ -30,7 +30,7 @@ async function downloadAudio(videoId) {
     const outputTemplate = path.join(tempDir, `youtube_audio_${videoId}`);
 
     try {
-        // Download audio using yt-dlp
+        // Download audio using yt-dlp with explicit binary path
         const result = await youtubedl(videoUrl, {
             output: `${outputTemplate}.%(ext)s`,
             extractAudio: true,
@@ -38,8 +38,11 @@ async function downloadAudio(videoId) {
             audioQuality: '192K',
             noWarnings: true,
             noCheckCertificates: true,
-            quiet: true,
+            quiet: false, // Enable output to see errors
             printJson: true
+        }, {
+            // Use system yt-dlp binary (installed in Dockerfile)
+            executablePath: '/usr/local/bin/yt-dlp'
         });
 
         const videoTitle = result.title || 'Unknown';
